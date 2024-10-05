@@ -76,7 +76,7 @@ class IndiaMartRepository:
                     'product_url': row.product_url,
                     'product_pdf_link': row.product_pdf_link,
                     'product_description': row.product_description,
-                    'product_specs': row.specs,
+                    'product_specs': row.product_specs,
                     'company_id': row.company_id,
                     'company_name': row.company_name,
                     'company_city': row.company_city,
