@@ -17,53 +17,64 @@ class IndiaMartRepository:
             return product_categories
 
     def filter_products(
-        self,
-        min_price: float | None = None,
-        max_price: float | None = None,
-        name: str | None = None,
-        category: str | None = None,
-        company_name: str | None = None,
-        company_city: str | None = None,
-        company_state: str | None = None,
-        company_country: str | None = None,
+            self,
+            min_price: float | None = None,
+            max_price: float | None = None,
+            name: str | None = None,
+            category: str | None = None,
+            company_name: str | None = None,
+            company_city: str | None = None,
+            company_state: str | None = None,
+            company_country: str | None = None,
     ):
         with Session(self.engine) as session:
             stmt = (
-                session.query(self.products_details)
+                session.query(
+                    self.products_details.id.label('product_id'),
+                    self.products_details.name.label('product_name'),
+                    self.products_details.price.label('product_price'),
+                    self.products_details.category.label('product_category'),
+                    self.company_details.id.label('company_id'),
+                    self.company_details.name.label('company_name'),
+                    self.company_details.city.label('company_city'),
+                    self.company_details.state.label('company_state'),
+                    self.company_details.country.label('company_country')
+                )
                 .join(self.company_details, self.products_details.company_id == self.company_details.id)
             )
 
             if name:
-                stmt = stmt.filter(
-                    self.products_details.name.contains(name)
-                )
+                stmt = stmt.filter(self.products_details.name.contains(name))
             if category:
-                stmt = stmt.filter(
-                    self.products_details.category.contains(category)
-                )
+                stmt = stmt.filter(self.products_details.category.contains(category))
             if min_price:
-                stmt = stmt.filter(
-                    self.products_details.price >= min_price,
-                )
+                stmt = stmt.filter(self.products_details.price >= min_price)
             if max_price:
-                stmt = stmt.filter(
-                    self.products_details.price <= max_price,
-                )
+                stmt = stmt.filter(self.products_details.price <= max_price)
             if company_name:
-                stmt = stmt.filter(
-                    self.company_details.name.contains(company_name),
-                )
+                stmt = stmt.filter(self.company_details.name.contains(company_name))
             if company_city:
-                stmt = stmt.filter(
-                    self.company_details.city.contains(company_city),
-                )
+                stmt = stmt.filter(self.company_details.city.contains(company_city))
             if company_state:
-                stmt = stmt.filter(
-                    self.company_details.state.contains(company_state),
-                )
+                stmt = stmt.filter(self.company_details.state.contains(company_state))
             if company_country:
-                stmt = stmt.filter(
-                    self.company_details.country.contains(company_country),
-                )
+                stmt = stmt.filter(self.company_details.country.contains(company_country))
 
-            return stmt.limit(50).all()
+            results = stmt.limit(50).all()
+
+            product_list = []
+            for row in results:
+                product = {
+                    'product_id': row.product_id,
+                    'product_name': row.product_name,
+                    'product_price': row.product_price,
+                    'product_category': row.product_category,
+                    'company_id': row.company_id,
+                    'company_name': row.company_name,
+                    'company_city': row.company_city,
+                    'company_state': row.company_state,
+                    'company_country': row.company_country,
+                }
+                product_list.append(product)
+
+            return product_list
