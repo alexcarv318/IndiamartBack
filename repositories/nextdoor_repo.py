@@ -25,7 +25,7 @@ class NextDoorRepository:
 
     def get_categories(self):
         with Session(self.engine) as session:
-            categories = session.query(self.contractors.category).distinct().limit(100).all()
+            categories = session.query(self.contractors.categories).distinct().limit(100).all()
             categories = [category[0] for category in categories]
             return categories
 
@@ -63,7 +63,7 @@ class NextDoorRepository:
                 )
             if category:
                 stmt = stmt.filter(
-                    self.contractors.category.contains(category)
+                    self.contractors.categories.contains(category)
                 )
 
             return stmt.limit(50).all()

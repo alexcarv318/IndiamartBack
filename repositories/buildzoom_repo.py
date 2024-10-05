@@ -13,13 +13,13 @@ class BuildZoomRepository:
 
     def get_cities(self):
         with Session(self.engine) as session:
-            cities = session.query(self.cities.value).distinct.limit(100).all()
+            cities = session.query(self.cities.value).distinct().limit(100).all()
             cities = [city[0] for city in cities]
             return cities
 
     def get_states(self):
         with Session(self.engine) as session:
-            states = session.query(self.states.value).distinct.limit(100).all()
+            states = session.query(self.states.value).distinct().limit(100).all()
             states = [state[0] for state in states]
             return states
 
