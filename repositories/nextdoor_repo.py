@@ -14,20 +14,25 @@ class NextDoorRepository:
     def get_cities(self):
         with Session(self.engine) as session:
             cities = session.query(self.contractors.city).distinct().limit(100).all()
-            cities = [city[0] for city in cities]
+            cities = [city[0] for city in cities if city[0]]
             return cities
 
     def get_states(self):
         with Session(self.engine) as session:
             states = session.query(self.contractors.state).distinct().limit(100).all()
-            states = [state[0] for state in states]
+            states = [state[0] for state in states if state[0]]
             return states
 
     def get_categories(self):
         with Session(self.engine) as session:
-            categories = session.query(self.contractors.categories).distinct().limit(100).all()
-            categories = [category[0] for category in categories]
-            return categories
+            categories = session.query(self.contractors.categories).distinct().limit(50).all()
+            categories_lists = [category[0] for category in categories if category[0]]
+
+            flat_categories = []
+            for category_list in categories_lists:
+                for category in category_list:
+                    flat_categories.append(category)
+            return flat_categories
 
     def filter_contractors(
         self,
@@ -63,7 +68,7 @@ class NextDoorRepository:
                 )
             if category:
                 stmt = stmt.filter(
-                    self.contractors.categories.contains(category)
+                    self.contractors.categories.any(category)
                 )
 
             return stmt.limit(50).all()

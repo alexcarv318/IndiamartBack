@@ -21,7 +21,7 @@ app.add_middleware(
 app.include_router(indiamart.router)
 app.include_router(nextdoor.router)
 app.include_router(buildzoom.router)
-app.include_router(amex.router)
+#app.include_router(amex.router)
 
 
 if __name__ == "__main__":
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     indiamart_engine.connect()
     nextdoor_engine.connect()
     buildzoom_engine.connect()
-    amex_engine.connect()
+    #amex_engine.connect()

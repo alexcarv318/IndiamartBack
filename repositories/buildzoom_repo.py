@@ -14,13 +14,13 @@ class BuildZoomRepository:
     def get_cities(self):
         with Session(self.engine) as session:
             cities = session.query(self.cities.value).distinct().limit(100).all()
-            cities = [city[0] for city in cities]
+            cities = [city[0] for city in cities if city[0]]
             return cities
 
     def get_states(self):
         with Session(self.engine) as session:
             states = session.query(self.states.value).distinct().limit(100).all()
-            states = [state[0] for state in states]
+            states = [state[0] for state in states if state[0]]
             return states
 
     def filter_contractors(
@@ -48,11 +48,11 @@ class BuildZoomRepository:
                 )
             if city:
                 stmt = stmt.filter(
-                    self.contractors.city.contains(city)
+                    self.cities.value.contains(city)
                 )
             if state:
                 stmt = stmt.filter(
-                    self.contractors.state.contains(state)
+                    self.states.value.contains(state)
                 )
             if postal_code:
                 stmt = stmt.filter(

@@ -12,19 +12,19 @@ class AmexRepository:
     def get_cities(self):
         with Session(self.engine) as session:
             cities = session.query(self.contractors.cities).limit(100).all()
-            cities = [city[0] for city in cities]
+            cities = [city[0] for city in cities if city[0]]
             return cities
 
     def get_states(self):
         with Session(self.engine) as session:
             states = session.query(self.contractors.state).limit(100).all()
-            states = [state[0] for state in states]
+            states = [state[0] for state in states if state[0]]
             return states
 
     def get_categories(self):
         with Session(self.engine) as session:
             categories = session.query(self.contractors.category).limit(100).all()
-            categories = [category[0] for category in categories]
+            categories = [category[0] for category in categories if category[0]]
             return categories
 
     def filter_contractors(

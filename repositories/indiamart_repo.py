@@ -13,7 +13,7 @@ class IndiaMartRepository:
     def get_products_categories(self):
         with Session(self.engine) as session:
             product_categories = session.query(self.products_details.category).distinct().limit(100).all()
-            product_categories = [category[0] for category in product_categories]
+            product_categories = [category[0] for category in product_categories if category[0]]
             return product_categories
 
     def filter_products(
