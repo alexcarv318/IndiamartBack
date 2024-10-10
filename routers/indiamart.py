@@ -27,7 +27,6 @@ def filter_products(
     company_name: Annotated[str | None, Query(max_length=255)] = None,
     company_city: Annotated[str | None, Query(max_length=255)] = None,
     company_state: Annotated[str | None, Query(max_length=255)] = None,
-    company_country: Annotated[str | None, Query(max_length=255)] = None,
 ):
     try:
         result = indiamart_repo.filter_products(
@@ -38,10 +37,24 @@ def filter_products(
             company_name=company_name,
             company_city=company_city,
             company_state=company_state,
-            company_country=company_country,
         )
 
         return {"rows_affected": result.get("rows_affected"), "products": result.get("products")}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/initial/products")
+def get_initial_products(
+    indiamart_repo: IndiaMartRepository = Depends(get_indiamart_repo),
+):
+    products = indiamart_repo.get_first_fifty_rows()
+    return {"products": products}
+
+@router.get("/initial/rows")
+def get_initial_rows(
+    indiamart_repo: IndiaMartRepository = Depends(get_indiamart_repo),
+):
+    rows_affected = indiamart_repo.get_total_count_of_rows()
+    return {"rows_affected": rows_affected}

@@ -2,11 +2,11 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from databases.amex_db import amex_engine
+# from databases.amex_db import amex_engine
 from databases.buildzoom_db import buildzoom_engine
 from databases.indiamart_db import indiamart_engine
 from databases.nextdoor_db import nextdoor_engine
-from routers import indiamart, nextdoor, buildzoom, amex
+from routers import indiamart, nextdoor, buildzoom # amex
 
 app = FastAPI(root_path="/api")
 
