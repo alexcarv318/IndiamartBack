@@ -1,3 +1,4 @@
+from sqlalchemy import Table, MetaData
 from sqlalchemy.orm import Session
 
 from databases.indiamart_db import indiamart_base, indiamart_engine
@@ -7,8 +8,14 @@ class IndiaMartRepository:
 
     def __init__(self):
         self.engine = indiamart_engine
+        metadata = MetaData()
         self.products_details = indiamart_base.classes.product_details
         self.company_details = indiamart_base.classes.company_details
+        self.category_mapping = Table(
+            'category_mapping',
+            metadata,
+            autoload_with=self.engine
+        )
 
     def get_total_count_of_rows(self):
         with Session(self.engine) as session:
@@ -25,7 +32,10 @@ class IndiaMartRepository:
             min_price: float | None = None,
             max_price: float | None = None,
             name: str | None = None,
-            category: str | None = None,
+            category1: str | None = None,
+            category2: str | None = None,
+            category3: str | None = None,
+            category4: str | None = None,
             company_name: str | None = None,
             company_city: str | None = None,
             company_state: str | None = None,
@@ -36,7 +46,10 @@ class IndiaMartRepository:
                     self.products_details.id.label('product_id'),
                     self.products_details.name.label('product_name'),
                     self.products_details.price.label('product_price'),
-                    self.products_details.category.label('product_category'),
+                    self.category_mapping.c.caregory1.label('product_category'),
+                    self.category_mapping.c.category2.label('product_category2'),
+                    self.category_mapping.c.category3.label('product_category3'),
+                    self.category_mapping.c.category4.label('product_category4'),
                     self.products_details.url.label('product_url'),
                     self.products_details.pdfLink.label('product_pdf_link'),
                     self.products_details.productDescription.label('product_description'),
@@ -47,12 +60,19 @@ class IndiaMartRepository:
                     self.company_details.state.label('company_state'),
                 )
                 .join(self.company_details, self.products_details.company_id == self.company_details.id)
+                .join(self.category_mapping, self.products_details.category == self.category_mapping.c.caregory1)
             )
 
             if name:
                 stmt = stmt.filter(self.products_details.name.contains(name))
-            if category:
-                stmt = stmt.filter(self.products_details.category.contains(category))
+            if category1:
+                stmt = stmt.filter(self.category_mapping.c.category1 == category1)
+            if category2:
+                stmt = stmt.filter(self.category_mapping.c.category2 == category2)
+            if category3:
+                stmt = stmt.filter(self.category_mapping.c.category3 == category3)
+            if category4:
+                stmt = stmt.filter(self.category_mapping.c.category4 == category4)
             if min_price:
                 stmt = stmt.filter(self.products_details.price >= min_price)
             if max_price:
@@ -127,3 +147,42 @@ class IndiaMartRepository:
                 product_list.append(product)
 
             return product_list
+
+
+    def get_distinct_categories_4(self):
+        print(self.category_mapping.columns.keys())
+        with Session(self.engine) as session:
+            distinct_categories = session.query(self.category_mapping.c.category4).distinct().all()
+            categories_list = [category[0] for category in distinct_categories if category[0]]
+            return categories_list
+
+    def get_categories(
+            self,
+            category4: str = None,
+            category3: str = None,
+            category2: str = None
+    ):
+        with Session(self.engine) as session:
+            categories = session.query(self.category_mapping)
+
+            if category4:
+                categories = categories.filter(self.category_mapping.c.category4 == category4)
+            if category3:
+                categories = categories.filter(self.category_mapping.c.category3 == category3)
+            if category2:
+                categories = categories.filter(self.category_mapping.c.category2 == category2)
+
+            categories_result = {
+                "category1": set(),
+                "category2": set(),
+                "category3": set(),
+                "category4": set(),
+            }
+
+            for category in categories.all():
+                categories_result["category4"].add(category[3])
+                categories_result["category3"].add(category[2])
+                categories_result["category2"].add(category[1])
+                categories_result["category1"].add(category[0])
+
+            return categories_result
