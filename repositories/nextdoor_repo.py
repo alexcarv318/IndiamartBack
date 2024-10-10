@@ -71,4 +71,6 @@ class NextDoorRepository:
                     self.contractors.categories.any(category)
                 )
 
-            return stmt.limit(50).all()
+            rows_affected = stmt.count()
+
+            return {"rows_affected": rows_affected, "contractors": stmt.limit(50).all()}

@@ -70,6 +70,7 @@ class BuildZoomRepository:
                     self.contractors.postal_code.contains(postal_code)
                 )
 
+            rows_affected = stmt.count()
             results = stmt.limit(50).all()
             contractor_list = []
             for row in results:
@@ -87,6 +88,6 @@ class BuildZoomRepository:
                 }
                 contractor_list.append(contractor)
 
-            return contractor_list
+            return {"rows_affected": rows_affected, "contractors": contractor_list}
 
 

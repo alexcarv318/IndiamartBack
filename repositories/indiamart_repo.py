@@ -64,6 +64,7 @@ class IndiaMartRepository:
             if company_country:
                 stmt = stmt.filter(self.company_details.country.contains(company_country))
 
+            rows_affected = stmt.count()
             results = stmt.limit(50).all()
 
             product_list = []
@@ -85,4 +86,4 @@ class IndiaMartRepository:
                 }
                 product_list.append(product)
 
-            return product_list
+            return {"rows_affected": rows_affected, "products": product_list}

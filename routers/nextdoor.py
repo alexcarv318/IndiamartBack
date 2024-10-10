@@ -48,7 +48,7 @@ def filter_contractors(
             category=category
         )
 
-        return {"contractors": result}
+        return {"rows_affected": result.get("rows_affected"), "contractors": result.get("contractors")}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

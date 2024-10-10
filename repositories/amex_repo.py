@@ -64,5 +64,7 @@ class AmexRepository:
                     self.contractors.contains(zip_code)
                 )
 
-            return stmt.limit(50).all()
+            rows_affected = stmt.count()
+
+            return {"rows_affected": rows_affected, "contractors": stmt.limit(50).all()}
 

@@ -41,7 +41,7 @@ def filter_products(
             company_country=company_country,
         )
 
-        return {"products": result}
+        return {"rows_affected": result.get("rows_affected"), "products": result.get("products")}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
