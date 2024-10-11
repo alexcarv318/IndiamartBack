@@ -66,16 +66,33 @@ def get_initial_rows(
     return {"rows_affected": rows_affected}
 
 
-@router.get("/categories")
-def get_categories(
+@router.get("/categories/4")
+def get_categories4(
     indiamart_repo: IndiaMartRepository = Depends(get_indiamart_repo),
-    category4: str = None,
-    category3: str = None,
-    category2: str = None
 ):
-    categories = indiamart_repo.get_categories(
-        category4=category4,
-        category3=category3,
-        category2=category2
-    )
-    return categories
+    categories = indiamart_repo.get_distinct_categories_4()
+    return {"categories": categories}
+
+@router.get("/categories/3")
+def get_categories3(
+    indiamart_repo: IndiaMartRepository = Depends(get_indiamart_repo),
+    category4: Annotated[str | None, Query(max_length=255)] = None,
+):
+    categories = indiamart_repo.get_distinct_categories_3(category4)
+    return {"categories": categories}
+
+@router.get("/categories/2")
+def get_categories2(
+    indiamart_repo: IndiaMartRepository = Depends(get_indiamart_repo),
+    category3: Annotated[str | None, Query(max_length=255)] = None,
+):
+    categories = indiamart_repo.get_distinct_categories_2(category3)
+    return {"categories": categories}
+
+@router.get("/categories/1")
+def get_categories1(
+    indiamart_repo: IndiaMartRepository = Depends(get_indiamart_repo),
+    category2: Annotated[str | None, Query(max_length=255)] = None,
+):
+    categories = indiamart_repo.get_distinct_categories_1(category2)
+    return {"categories": categories}

@@ -1,3 +1,5 @@
+from unicodedata import category
+
 from sqlalchemy import Table, MetaData
 from sqlalchemy.orm import Session
 
@@ -66,7 +68,7 @@ class IndiaMartRepository:
             if name:
                 stmt = stmt.filter(self.products_details.name.contains(name))
             if category1:
-                stmt = stmt.filter(self.category_mapping.c.category1 == category1)
+                stmt = stmt.filter(self.category_mapping.c.caregory1 == category1)
             if category2:
                 stmt = stmt.filter(self.category_mapping.c.category2 == category2)
             if category3:
@@ -150,39 +152,31 @@ class IndiaMartRepository:
 
 
     def get_distinct_categories_4(self):
-        print(self.category_mapping.columns.keys())
         with Session(self.engine) as session:
             distinct_categories = session.query(self.category_mapping.c.category4).distinct().all()
             categories_list = [category[0] for category in distinct_categories if category[0]]
             return categories_list
 
-    def get_categories(
-            self,
-            category4: str = None,
-            category3: str = None,
-            category2: str = None
-    ):
+    def get_distinct_categories_3(self, category4):
         with Session(self.engine) as session:
-            categories = session.query(self.category_mapping)
+            distinct_categories = session.query(self.category_mapping.c.category3)
+            distinct_categories = distinct_categories.filter(self.category_mapping.c.category4 == category4)
+            distinct_categories = distinct_categories.distinct().all()
+            categories_list = [category[0] for category in distinct_categories if category[0]]
+            return categories_list
 
-            if category4:
-                categories = categories.filter(self.category_mapping.c.category4 == category4)
-            if category3:
-                categories = categories.filter(self.category_mapping.c.category3 == category3)
-            if category2:
-                categories = categories.filter(self.category_mapping.c.category2 == category2)
+    def get_distinct_categories_2(self, category3):
+        with Session(self.engine) as session:
+            distinct_categories = session.query(self.category_mapping.c.category2)
+            distinct_categories = distinct_categories.filter(self.category_mapping.c.category3 == category3)
+            distinct_categories = distinct_categories.distinct().all()
+            categories_list = [category[0] for category in distinct_categories if category[0]]
+            return categories_list
 
-            categories_result = {
-                "category1": set(),
-                "category2": set(),
-                "category3": set(),
-                "category4": set(),
-            }
-
-            for category in categories.all():
-                categories_result["category4"].add(category[3])
-                categories_result["category3"].add(category[2])
-                categories_result["category2"].add(category[1])
-                categories_result["category1"].add(category[0])
-
-            return categories_result
+    def get_distinct_categories_1(self, category2):
+        with Session(self.engine) as session:
+            distinct_categories = session.query(self.category_mapping.c.caregory1)
+            distinct_categories = distinct_categories.filter(self.category_mapping.c.category2 == category2)
+            distinct_categories = distinct_categories.distinct().all()
+            categories_list = [category[0] for category in distinct_categories if category[0]]
+            return categories_list
