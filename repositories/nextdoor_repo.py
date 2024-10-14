@@ -44,7 +44,14 @@ class NextDoorRepository:
         category: str | None = None,
     ):
         with Session(self.engine) as session:
-            stmt = session.query(self.contractors)
+            stmt = session.query(
+                self.contractors.name.label("name"),
+                self.contractors.phone.label("phone"),
+                self.contractors.city.label("city"),
+                self.contractors.state.label("state"),
+                self.contractors.zip_code.label("zip_code"),
+                self.contractors.categories.label("category"),
+            )
 
             if name:
                 stmt = stmt.filter(
@@ -72,5 +79,18 @@ class NextDoorRepository:
                 )
 
             rows_affected = stmt.count()
+            result = stmt.limit(50).all()
 
-            return {"rows_affected": rows_affected, "contractors": stmt.limit(50).all()}
+            contractors_list = []
+            for row in result:
+                contractor = {
+                    "name": row.name,
+                    "phone": row.phone,
+                    "city": row.city,
+                    "state": row.state,
+                    "zip_code": row.zip_code,
+                    "category": row.category,
+                }
+                contractors_list.append(contractor)
+
+            return {"rows_affected": rows_affected, "contractors": contractors_list}

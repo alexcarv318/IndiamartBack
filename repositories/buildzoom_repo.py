@@ -34,7 +34,6 @@ class BuildZoomRepository:
         with Session(self.engine) as session:
             stmt = (
                 session.query(
-                    self.contractors.id.label('contractor_id'),
                     self.contractors.company_name.label('company_name'),
                     self.contractors.phone.label('phone'),
                     self.contractors.postal_code.label('postal_code'),
@@ -75,7 +74,6 @@ class BuildZoomRepository:
             contractor_list = []
             for row in results:
                 contractor = {
-                    'contractor_id': row.contractor_id,
                     'company_name': row.company_name,
                     'phone': row.phone,
                     'postal_code': row.postal_code,
